@@ -1,5 +1,6 @@
-var request = require('request');
-var yargs = require('yargs');
+const yargs = require('yargs');
+
+const geocode = require('./geocode/geocode');
 
 var argv = yargs
     .options({
@@ -13,23 +14,12 @@ var argv = yargs
     .help()
     .argv;
 
-    var address = argv.address;
-    console.log(address);
+   geocode.geocodeAddress(argv.address, (errorMessage, result ) => {
+        if(errorMessage)
+            console.log(errorMessage);
+        else
+            console.log(result);
+    });
+    
+    
 
-request({
-    url: `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=AIzaSyB_E8lBH3rRZ0Vj-k1P5zlMGTXqWVznyow`,
-    json: true
-}, (err, res, body) => {
-    if(err)
-        console.log('Could Not Connect to The Server');
-    else if(body.status === 'ZERO_RESULT')
-        console.log('Address Not Found')
-    else if(res.statusCode === 200)
-    {
-        console.log(body.results[0].formatted_address);
-        console.log(body.results[0].geometry.location.lat);
-        console.log(body.results[0].geometry.location.lng);        
-    }
-    else 
-        console.log('Something Went Wrong!');
-});
